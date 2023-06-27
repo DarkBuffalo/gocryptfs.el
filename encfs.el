@@ -18,14 +18,19 @@
 ;;
 ;;; Code:
 
-(defcustom encfs-private-dir-name ".Perso"
+(require 'epg)
+
+(defcustom encfs-private-dir-name "Perso"
   "encfs private directory name"
   :type 'string)
 
-(defcustom encfs-root-dir "~/.encrypted/"
+(defcustom encfs-root-dir "~/.Encrypted/"
   "encfs root configuration directory"
   :type 'directory)
 
+;;;###encfs-autoload
+(defconst encfs-config-file ".encfs6.xml"
+  "Encfs configuration file name.")
 
 (defcustom encfs-passphrase-file (concat encfs-root-dir "my-pass.gpg")
   "GPG encrypted file containing encfs password.")
@@ -39,7 +44,24 @@
   (concat encfs-root-dir "wrapped-passphrase"))
 
 (defun encfs--mount-passphrase-sig-file ()
-  (concat encfs-root-dir encfs-private-dir-name ".sig"))
+  (concat encfs-root-dir encfs-config-file))
+
+
+(defun encfs-available-p ()
+  (and (file-directory-p (expand-file-name encfs-private-dir-name "~"))
+       (cl-every #'file-exists-p (list encfs--mount-private-cmd
+                                       encfs--umount-private-cmd
+                                       (encfs-config-file)))))
+
+(defun encfs-private-mounted-p ()
+  (let ((mount (shell-command-to-string "mount")))
+    (and (string-match-p (concat ".*" (expand-file-name encfs-private-dir-name "~") ".*encfs.*") mount)
+         t)))
+
+(defun encfs--encrypt-filenames-p ()
+  (/= 1 (with-temp-buffer
+          (insert-file-contents (encfs--mount-passphrase-sig-file))
+          (count-lines (point-min) (point-max)))))
 
 (defun encfs--passphrase ()
   (string-trim-right
@@ -49,30 +71,6 @@
     nil)
    "[\n\r]+"))
 
-(defun encfs--encrypt-filenames-p ()
-  (/= 1 (with-temp-buffer
-          (insert-file-contents (encfs--mount-passphrase-sig-file))
-          (count-lines (point-min) (point-max)))))
-
-(defun encfs-available-p ()
-  (and (file-directory-p (expand-file-name encfs-private-dir-name "~"))
-       (cl-every #'file-exists-p (list encfs--mount-private-cmd
-                                       encfs--umount-private-cmd
-                                       (encfs--wrapped-passphrase-file)
-                                       (encfs--mount-passphrase-sig-file)))))
-
-(defun encfs--unwrap-passphrase-command ()
-  (format
-   (if (encfs--encrypt-filenames-p)
-       "encfs-insert-wrapped-passphrase-into-keyring %s '%s'"
-     "ecryptfs-unwrap-passphrase %s '%s' | ecryptfs-add-passphrase -")
-   (encfs--wrapped-passphrase-file) (encfs--passphrase)))
-
-(defun encfs-private-mounted-p ()
-  (let ((mount (shell-command-to-string "mount")))
-    (and (string-match-p (concat ".*" (expand-file-name encfs-private-dir-name "~") ".*encfs.*") mount)
-         t)))
-
 ;;;###autoload
 (defun encfs-toggle-mount-private ()
   "Mount/Unmount encfs' private directory."
@@ -81,12 +79,18 @@
       (encfs-umount-private)
     (encfs-mount-private)))
 
+(defun encfs--unwrap-passphrase-command ()
+  (format
+   (if (encfs--encrypt-filenames-p)
+       "encfs-insert-wrapped-passphrase-into-keyring %s '%s'"
+     "encfs-unwrap-passphrase %s '%s' | encfs-add-passphrase -")
+   (encfs--wrapped-passphrase-file) (encfs--passphrase)))
+
 ;;;###autoload
 (defun encfs-mount-private ()
   "Mount encfs' private directory."
   (interactive)
-  (if (not (and (file-exists-p (encfs--wrapped-passphrase-file))
-                (file-exists-p (encfs--mount-passphrase-sig-file))))
+  (if (not (and (file-exists-p (concat encfs-root-dir encfs-config-file))))
       (user-error "Encrypted private directory \"%s\" is not setup properly."
                   encfs-private-dir-name)
     (let ((try-again t))
