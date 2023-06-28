@@ -1,0 +1,7 @@
+#+title: gocryptfs.el
+#+author: DarkBuffalo
+#+language: en
+
+
+
+* Inspiration
