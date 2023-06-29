@@ -34,7 +34,8 @@ This package is inspired by the [code embedded in @abougouffa&rsquo;s minemacs d
 
 ## Use
 
-https://raw.githubusercontent.com/DarkBuffalo/gocryptfs.el/main/assets/demo.mp4
+https://github.com/DarkBuffalo/gocryptfs.el/assets/65488203/8592d088-986f-48e7-957c-76ba67de6c40
+
 
 ## Project
 
