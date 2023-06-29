@@ -19,7 +19,7 @@ This package is inspired by the [code embedded](https://github.com/abougouffa/mi
 
 -   Initialize new encrypted filesystem
 
-        gocryptfs -init [OPTIONS] CIPHERDIR
+        gocryptfs -init [OPTIONS] .encrypted
 
     see [manpage](https://github.com/rfjakob/gocryptfs/blob/master/Documentation/MANPAGE.md#initialize-new-encrypted-filesystem)
 
@@ -28,7 +28,10 @@ This package is inspired by the [code embedded](https://github.com/abougouffa/mi
 ## Installation
 
     (use-package gocryptfs
-       :straight (:local-repo "~/your folder/gocryptfs"))
+       :straight (:local-repo "~/your folder/gocryptfs")
+       :custom
+       (gocryptfs-private-dir-name "Perso")
+       (gocryptfs-root-dir "~/.encrypted"))
 
 
 
