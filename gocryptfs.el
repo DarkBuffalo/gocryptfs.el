@@ -28,9 +28,6 @@
   "gocryptfs root configuration directory"
   :type 'directory)
 
-(defcustom gocryptfs-passphrase-file  "~/my-pass.gpg"
-  "GPG encrypted file containing gocryptfs password.")
-
 (defun gocryptfs-config-file ()
   (concat gocryptfs-root-dir "gocryptfs.conf"))
 

@@ -2,6 +2,28 @@
 #+author: DarkBuffalo
 #+language: en
 
+#+html: <img src="assets/logo.png" align="right">
 
+gocryptfs.el is a tool to easily mount and unmount an encrypted folder to store its most sensitive data.
 
 * Inspiration
+This package is inspired by the [[https://github.com/abougouffa/minemacs/blob/main/elisp/ecryptfs.el][code embedded in abougouffa's minemacs distribution]].
+
+* Requirements
+- [[https://github.com/rfjakob/gocryptfs][gocryptfs]] :: =sudo pacman -S gocryptfs=
+- Initialize new encrypted filesystem
+#+begin_src shell
+gocryptfs -init [OPTIONS] CIPHERDIR
+#+end_src
+  see [[https://github.com/rfjakob/gocryptfs/blob/master/Documentation/MANPAGE.md#initialize-new-encrypted-filesystem][manpage]]
+
+* Installation
+#+begin_src emacs-lisp
+(use-package gocryptfs
+   :straight (:local-repo "~/your folder/gocryptfs"))
+#+end_src
+
+
+* Project
+- [ ] add init auto
+- [ ] add reverse mode option
