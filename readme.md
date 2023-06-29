@@ -7,7 +7,7 @@ gocryptfs.el is a tool to easily mount and unmount an encrypted folder to store 
 
 ## Inspiration
 
-This package is inspired by the [code embedded](https://github.com/abougouffa/minemacs/blob/main/elisp/ecryptfs.el) in @abougouffa&rsquo;s [minemacs distribution](https://github.com/abougouffa/minemacs).
+This package is inspired by the [code embedded](https://github.com/abougouffa/minemacs/blob/main/elisp/ecryptfs.el) in @abougouffa [minemacs distribution](https://github.com/abougouffa/minemacs).
 
 
 
