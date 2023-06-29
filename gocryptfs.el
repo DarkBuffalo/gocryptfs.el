@@ -76,18 +76,19 @@
 ;;;###autoload
 (defun gocryptfs-mount-private ()
   "Mount gocryptfs' private directory."
-  (interactive
-   (let ((try-again t))
-     ;;(message "Encrypted filenames mode [%s]" (if (gocryptfs--encrypt-filenames-p) "ON" "OFF"))
-     (while (and ;; In the first iteration, we try to silently mount the gocryptfs private directory,
-             ;; this would succeed if the key is available in the keyring.
-             (prog1 (not (zerop (shell-command gocryptfs--mount-private-cmd gocryptfs-buffer-name)))
-               (message "Successfully mounted private directory."))
-             (prog1 try-again (setq try-again nil)))
-       (if (zerop (shell-command (concat "echo " (read-passwd "Password :") " | " gocryptfs--mount-private-cmd " " gocryptfs-root-dir " " gocryptfs-private-dir-name)))
-           (message "Successfully mounted private directory.")
-         (user-error "A problem occured while mounting the private directory, see %s"
-                     gocryptfs-buffer-name))))))
+  (interactive)
+
+  (let ((try-again t))
+    ;;(message "Encrypted filenames mode [%s]" (if (gocryptfs--encrypt-filenames-p) "ON" "OFF"))
+    (while (and ;; In the first iteration, we try to silently mount the gocryptfs private directory,
+            ;; this would succeed if the key is available in the keyring.
+            (prog1 (not (zerop (shell-command gocryptfs--mount-private-cmd gocryptfs-buffer-name)))
+              (message "Successfully mounted private directory."))
+            (prog1 try-again (setq try-again nil)))
+      (if (zerop (shell-command (concat "echo " (read-passwd "Password :") " | " gocryptfs--mount-private-cmd " " gocryptfs-root-dir " " gocryptfs-private-dir-name)))
+          (message "Successfully mounted private directory.")
+        (user-error "A problem occured while mounting the private directory, see %s"
+                    gocryptfs-buffer-name)))))
 
 ;;;###autoload
 (defun gocryptfs-umount-private ()
