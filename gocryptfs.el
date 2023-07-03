@@ -2,31 +2,32 @@
 ;;
 ;; Filename: gocryptfs.el
 ;; Description:
-;; Author: Matthias David
-;; Maintainer: Matthias David
+;; Author: Matthias David <darkbuffalo@gnu.re>
 ;; Created: Tue Jun 27 15:29:11 2023 (+0200)
-;; Version:
-;; Last-Updated:
-;;           By:
-;;     Update #: 0
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
+;; Version: 0.1
+;; Package-Requires: ((emacs "24.4") (epg))
+
 ;;; Commentary:
-;; This allows me to mouont a private directory encrypted using encfs.
+;; This allows me to mount a private directory encrypted using gocryptfs.
 ;;
 ;;
 ;;; Code:
 
 (require 'epg)
 
+(defgroup gocrytfs nil
+  "Mount a private directory encrypted using gocryptfs."
+  :group 'crypto)
+
 (defcustom gocryptfs-private-dir-name "Perso"
-  "gocryptfs private directory name"
-  :type 'string)
+  "Gocryptfs private directory name."
+  :type 'string
+  :group 'gocryptfs)
 
 (defcustom gocryptfs-root-dir "~/.perso.tomb/"
-  "gocryptfs root configuration directory"
-  :type 'directory)
+  "Gocryptfs root configuration directory."
+  :type 'directory
+  :group 'gocryptfs)
 
 (defun gocryptfs-config-file ()
   (concat gocryptfs-root-dir "gocryptfs.conf"))
@@ -48,18 +49,6 @@
     (and (string-match-p (concat ".*" (expand-file-name gocryptfs-private-dir-name "~") ".*gocryptfs.*") mount)
          t)))
 
-(defun gocryptfs--encrypt-filenames-p ()
-  (/= 1 (with-temp-buffer
-          (insert-file-contents (gocryptfs--mount-passphrase-sig-file))
-          (count-lines (point-min) (point-max)))))
-
-(defun gocryptfs--passphrase ()
-  (string-trim-right
-   (epg-decrypt-file
-    (epg-make-context)
-    (expand-file-name gocryptfs-passphrase-file)
-    nil)
-   "[\n\r]+"))
 
 ;;;###autoload
 (defun gocryptfs-toggle-mount-private ()
@@ -76,7 +65,6 @@
   (interactive)
 
   (let ((try-again t))
-    ;;(message "Encrypted filenames mode [%s]" (if (gocryptfs--encrypt-filenames-p) "ON" "OFF"))
     (while (and ;; In the first iteration, we try to silently mount the gocryptfs private directory,
             ;; this would succeed if the key is available in the keyring.
             (prog1 (not (zerop (shell-command gocryptfs--mount-private-cmd gocryptfs-buffer-name)))
