@@ -21,9 +21,11 @@ Its goal is to integrate gocryptfs into the Emacs workflow, eliminating the need
 
 ** Requirements
 - install [[https://github.com/rfjakob/gocryptfs][gocryptfs]]
-   src sh
-    sudo pacman -S gocryptfs
-   src
+
+    #+begin_src sh
+      sudo pacman -S gocryptfs
+    #+end_src
+
 
 - Initialize new encrypted filesystem
 
