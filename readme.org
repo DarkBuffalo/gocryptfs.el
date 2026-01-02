@@ -47,11 +47,11 @@ see [[https://github.com/rfjakob/gocryptfs/blob/master/Documentation/MANPAGE.md#
 
 #+BEGIN: github-commits :user DarkBuffalo :repo gocryptfs.el :n 5
 * Latest commits
+- [[https://github.com/DarkBuffalo/gocryptfs.el/commit/93a039a][93a039a]] - fix: doc
+- [[https://github.com/DarkBuffalo/gocryptfs.el/commit/f753abe][f753abe]] - doc: org file
 - [[https://github.com/DarkBuffalo/gocryptfs.el/commit/f1af34a][f1af34a]] - add: security
 - [[https://github.com/DarkBuffalo/gocryptfs.el/commit/fe43b40][fe43b40]] - fix: minor error
 - [[https://github.com/DarkBuffalo/gocryptfs.el/commit/81d69e5][81d69e5]] - fix: readme
-- [[https://github.com/DarkBuffalo/gocryptfs.el/commit/860c7aa][860c7aa]] - fix: github user
-- [[https://github.com/DarkBuffalo/gocryptfs.el/commit/153da3d][153da3d]] - fix: links
 
 #+END:
 
