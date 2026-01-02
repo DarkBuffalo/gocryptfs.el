@@ -126,12 +126,28 @@ Each vault is defined by:
 (defun gocryptfs-init-vault ()
   "Initialize a gocryptfs vault."
   (interactive)
-  (let* ((vault (gocryptfs--select-vault))
-         (name  (plist-get vault :name))
+
+  (unless (gocryptfs-available-p)
+    (user-error "gocryptfs tools are not available"))
+
+  (let* ((vault  (gocryptfs--select-vault))
+         (name   (plist-get vault :name))
          (cipher (expand-file-name (plist-get vault :cipher-dir)))
+         (mount  (expand-file-name (plist-get vault :mount-dir)))
          (buffer (get-buffer-create gocryptfs-buffer-name)))
 
-    (when (gocryptfs-vault-initialized-p vault)
+    ;; Create directories if needed
+    (unless (file-directory-p cipher)
+      (make-directory cipher t))
+    (unless (file-directory-p mount)
+      (make-directory mount t))
+
+    ;; Refuse non-empty cipher directory
+    (when (directory-files cipher nil "^[^.].*")
+      (user-error "Cipher directory %s is not empty" cipher))
+
+    ;; Refuse re-init
+    (when (file-exists-p (expand-file-name "gocryptfs.conf" cipher))
       (user-error "Vault %s is already initialized" name))
 
     (unless (yes-or-no-p
@@ -147,15 +163,19 @@ Each vault is defined by:
         (erase-buffer))
       (display-buffer buffer)
 
-      (let ((proc (make-process
-                   :name "emacs-gocryptfs-init"
-                   :buffer buffer
-                   :stderr buffer
-                   :command (list gocryptfs-mount-command "-init" cipher)
-                   :noquery t)))
+      (let ((proc
+             (make-process
+              :name "emacs-gocryptfs-init"
+              :buffer buffer
+              :stderr buffer
+              :command (list gocryptfs-mount-command "-init" cipher)
+              :noquery t)))
+        ;; gocryptfs expects the password twice
         (process-send-string proc (concat pw1 "\n" pw1 "\n"))
         (process-send-eof proc)
+
         (message "Initializing vault %s..." name)))))
+
 
 
 ;;;; Mount / Unmount
