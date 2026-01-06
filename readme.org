@@ -2,24 +2,23 @@
 
 #+HTML: <img src="assets/logo.png" align="right">
 
-gocryptfs.el is an Emacs Lisp package that allows users to mount and unmount a gocryptfs-encrypted directory directly from Emacs.
+=gocryptfs.el= is an Emacs Lisp package that provides native Emacs commands to
+*initialize, mount, unmount, and manage multiple gocryptfs-encrypted directories
+(“vaults”)*.
 
-The package provides interactive commands to:
-- mount a private directory encrypted with gocryptfs,
-- unmount the corresponding FUSE mount point,
-- automatically toggle between mounted and unmounted states.
-
-Its goal is to integrate gocryptfs into the Emacs workflow, eliminating the need to use an external terminal while preserving proper password-handling security practices.
+The package integrates gocryptfs cleanly into the Emacs workflow, without shell
+wrappers, while correctly handling the real-world constraints of FUSE-based
+filesystems.
 
 
-** Security Considerations
+* Security Considerations
 
 - The password is never passed through the shell
 - No use of echo | gocryptfs
 - No plaintext password storage
 - Sensitive input is sent exclusively via the gocryptfs process standard input
 
-** Requirements
+* Requirements
 - install [[https://github.com/rfjakob/gocryptfs][gocryptfs]]
 
     #+begin_src sh
@@ -27,22 +26,54 @@ Its goal is to integrate gocryptfs into the Emacs workflow, eliminating the need
     #+end_src
 
 
-- Initialize new encrypted filesystem
-
-#+begin_src sh
-  gocryptfs -init [OPTIONS] .encrypted
-#+end_src
-
-see [[https://github.com/rfjakob/gocryptfs/blob/master/Documentation/MANPAGE.md#initialize-new-encrypted-filesystem][manpage]]
-
-** Installation
+* Installation
 #+begin_src elisp
- (use-package gocryptfs
-       :straight (:local-repo "~/your folder/gocryptfs")
-       :custom
-       (gocryptfs-private-dir-name "Perso")
-       (gocryptfs-root-dir "~/.encrypted"))
+  (use-package gocryptfs
+    :straight (:local-repo "~/your folder/gocryptfs")
+    :custom
+    (gocryptfs-vaults
+     '((:name "personal"
+              :cipher-dir "~/.tomb"
+              :mount-dir "~/Perso")
+       (:name "pro"
+              :cipher-dir "~/.tomb2"
+              :mount-dir "~/Pro"))))
 #+end_src
+
+
+* Usage
+
+** Initialize a vault
+
+Before mounting a vault for the first time, it must be initialized:
+
+#+BEGIN_SRC emacs-lisp
+M-x gocryptfs-init-vault
+#+END_SRC
+
+This command:
+- creates required directories if needed
+- validates that the cipher directory is empty
+- securely asks for a password (twice)
+- runs =gocryptfs -init=
+
+** Mount a vault
+
+#+BEGIN_SRC emacs-lisp
+M-x gocryptfs-mount
+#+END_SRC
+
+You will be prompted to select a vault and enter its password.
+
+The mount process is asynchronous and does not block Emacs.
+
+** Unmount a vault
+
+#+BEGIN_SRC emacs-lisp
+M-x gocryptfs-umount
+#+END_SRC
+
+
 
 
 #+BEGIN: github-commits :user DarkBuffalo :repo gocryptfs.el :n 5

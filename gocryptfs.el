@@ -1,6 +1,6 @@
 ;;; gocryptfs.el --- goCryptFs Tool -*- lexical-binding: t; -*-
 ;;
-;; Author: DarkBuffalo <darkbuffalo@gnu.re>
+;; Author: DarkBuffalo <(rot13 "qnexohssnyb@tah.er")>
 ;; Created: Tue Jun 27 15:29:11 2023 (+0200)
 ;; Version: 0.2
 ;; Package-Requires: ((emacs "24.4") (epg) (cl-lib))
